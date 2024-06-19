@@ -23,5 +23,6 @@ export enum ErrorCode{
     INCORRECT_PASSWORD = 1003,
     UNPROCESSABLE_ENTITY =2001,
     INTERNAL_SERVER_ERROR = 3001,
-    UnauthorizedException_ERROR =4001
+    UnauthorizedException_ERROR =4001,
+    PRODUCT_NOT_FOUND = 5001
 }

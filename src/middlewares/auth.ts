@@ -20,13 +20,11 @@ const authMiddleware = async(req:Request,res:Response,next:NextFunction)=>{
             throw new UnauthorizedException('Unauthorized',ErrorCode.UnauthorizedException_ERROR)
         }
         // 5. to attach the user to the current request object
-
         req.user = user;
         next();
     } catch (error) {
         next (new UnauthorizedException('Unauthorized',ErrorCode.UnauthorizedException_ERROR))
     }
- 
 }
 
 export default authMiddleware; 
