@@ -1,5 +1,7 @@
 //message,status code,error codes,error
 
+import { UnauthorizedException } from "./unauthorized";
+
 export class httpException extends Error{
     message: string;
     errorCode:any;
@@ -20,5 +22,6 @@ export enum ErrorCode{
     USER_ALREADY_EXISTS = 1002,
     INCORRECT_PASSWORD = 1003,
     UNPROCESSABLE_ENTITY =2001,
-    INTERNAL_SERVER_ERROR = 3001
+    INTERNAL_SERVER_ERROR = 3001,
+    UnauthorizedException_ERROR =4001
 }

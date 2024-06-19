@@ -1,3 +1,4 @@
+import { IGetUserAuthInfoRequest } from './../types/express.d';
 import { Request, Response, NextFunction } from "express";
 import { prismaClient } from "../lib/db";
 import { compareSync, hashSync } from "bcrypt";
@@ -5,9 +6,11 @@ import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../secrets";
 import { BadRequestException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
-import { UnprocessableEntity } from "../exceptions/validation";
-import { signUpSchema } from "../schema/users";
+import { signInSchema, signUpSchema } from "../schema/users";
+import { NotFoundException } from "../exceptions/not-found";
+
 export default class AuthService {
+  //register
   public static RegisterUser = async (
     req: Request,
     res: Response,
@@ -15,10 +18,6 @@ export default class AuthService {
   ) => {
     signUpSchema.parse(req.body);
     const { firstName, lastName, email, password } = req.body;
-    if (!password) {
-      throw Error("Password is required and cannot be empty");
-    }
-
     let user = await prismaClient.user.findFirst({ where: { email } });
     if (user) {
       next(
@@ -28,7 +27,6 @@ export default class AuthService {
         )
       );
     }
-
     user = await prismaClient.user.create({
       data: {
         firstName,
@@ -39,31 +37,32 @@ export default class AuthService {
     });
     res.json(user);
   };
-
+  //login
   public static LoginUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    try {
-      const { email, password } = req.body;
-
-      if (!password) {
-        throw Error("Password is required and cannot be empty");
-      }
-      let user = await prismaClient.user.findFirst({ where: { email } });
-      if (!user) {
-        throw Error("User does not exists");
-      }
-      if (!compareSync(password, user.password)) {
-        throw Error("Incorrect password..!");
-      }
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-        expiresIn: "1h",
-      });
-      res.json({ user, token });
-    } catch (error: any) {
-      next(error);
+    signInSchema.parse(req.body);
+    const { email, password } = req.body;
+    let user = await prismaClient.user.findFirst({ where: { email } });
+    if (!user) {
+      throw new NotFoundException(
+        "User does not exists",
+        ErrorCode.USER_NOT_FOUND
+      );
     }
+    if (!compareSync(password, user.password)) {
+      throw new BadRequestException(
+        "Incorrect password..!",
+        ErrorCode.INCORRECT_PASSWORD
+      );
+    }
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    res.json({ user, token });
+  };
+  // return the logged in user
+  public static me = async (req:IGetUserAuthInfoRequest, res:Response) => {
+    res.json(req.user);
   };
 }

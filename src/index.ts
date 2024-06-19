@@ -1,4 +1,5 @@
-import express,{Express,Request,Response} from "express"
+
+import express,{Express} from "express"
 import { PORT } from "./secrets"
 import authRouter from './routes/auth.route';
 import { json, urlencoded } from 'express';
