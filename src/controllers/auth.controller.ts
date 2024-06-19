@@ -3,13 +3,18 @@ import { prismaClient } from "../lib/db";
 import { compareSync, hashSync } from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../secrets";
+import { BadRequestException } from "../exceptions/bad-requests";
+import { ErrorCode } from "../exceptions/root";
+import { UnprocessableEntity } from "../exceptions/validation";
+import { signUpSchema } from "../schema/users"; 
 export default class AuthService {
   public static RegisterUser = async (
     req: Request,
-    res: Response,
+    res: Response, 
     next: NextFunction
   ) => {
     try {
+      signUpSchema.parse(req.body);
       const { firstName, lastName, email, password } = req.body;
       if (!password) {
         throw Error("Password is required and cannot be empty");
@@ -17,7 +22,7 @@ export default class AuthService {
 
       let user = await prismaClient.user.findFirst({ where: { email } });
       if (user) {
-        throw Error("User already exists");
+        next(new BadRequestException("User already exists",ErrorCode.USER_ALREADY_EXISTS))
       }
 
       user = await prismaClient.user.create({
@@ -29,8 +34,8 @@ export default class AuthService {
         },
       });
       res.json(user);
-    } catch (error: any) {
-      console.log(error);
+    } catch (err: any) {
+      next(new UnprocessableEntity(err?.issues,'Unprocessable entity',ErrorCode.UNPROCESSABLE_ENTITY))
     }
   };
 
@@ -57,7 +62,7 @@ export default class AuthService {
       });
       res.json({user,token})
     } catch (error: any) {
-      console.log(error);
+      next(error);
     }
   };
 }
