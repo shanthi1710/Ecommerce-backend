@@ -46,7 +46,7 @@ export default class AuthService {
     signInSchema.parse(req.body);
     const { email, password } = req.body;
     let user = await prismaClient.user.findFirst({ where: { email } });
-    if (!user) {
+     if (!user) {
       throw new NotFoundException(
         "User does not exists",
         ErrorCode.USER_NOT_FOUND
