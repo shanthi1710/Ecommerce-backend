@@ -15,7 +15,7 @@ const authMiddleware = async(req:Request,res:Response,next:NextFunction)=>{
         // 3. if the token is present,verify that token and extract the payload 
         const payload  = jwt.verify(token, JWT_SECRET) as any;
         // 4. to get the user from the playload
-        const user = await prismaClient.user.findFirst({where:{id:payload.userId}})
+        const user = await prismaClient.user.findUnique({where:{id:payload.userId}})
         if(!user){
             throw new UnauthorizedException('Unauthorized',ErrorCode.UnauthorizedException_ERROR)
         }
