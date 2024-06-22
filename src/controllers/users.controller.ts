@@ -72,6 +72,12 @@ export default class {
             userId: req.user?.id,
           },
         })
+        if(billingAddress.userId != req.user?.id){
+          throw new NotFoundException(
+            "Address not found.",
+            ErrorCode.ADDRESS_NOT_FOUND
+          );
+        }
       } catch (error) {
         throw new NotFoundException(
           "Address not found.",

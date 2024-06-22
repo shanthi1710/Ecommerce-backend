@@ -25,5 +25,6 @@ export enum ErrorCode{
     INTERNAL_SERVER_ERROR = 3001,
     UnauthorizedException_ERROR =4001,
     PRODUCT_NOT_FOUND = 5001,
-    ADDRESS_NOT_FOUND =6001
+    ADDRESS_NOT_FOUND =6001,
+    ORDER_NOT_FOUND = 7001
 }
