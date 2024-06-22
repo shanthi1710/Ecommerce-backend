@@ -1,3 +1,4 @@
+ 
 import { Request, Response } from "express";
 import { prismaClient } from "../lib/db";
 import { NotFoundException } from "../exceptions/not-found";
@@ -79,26 +80,24 @@ export default class Product {
     }
   };
   public static searchProducts = async (req: Request, res: Response) => {
-    try {
-      const searchTerm = req.query.q as string;
-
-      if (!searchTerm) {
-        throw new NotFoundException(
-          "Search term is required..!",
-          ErrorCode.SEARCH_NOT_FOUND
-        );
-      }
-
-      const result = await prismaClient.$queryRaw`
-        SELECT * FROM "Product"
-        WHERE to_tsvector("name" || ' ' || "description" || ' ' || "tags") @@ to_tsquery(${searchTerm});
-      `;
-      return res.json(result);
-    } catch (error) {
-      console.error("Error searching products:", error);
-      return res
-        .status(500)
-        .json({ error: "An error occurred while searching for products" });
-    }
+     try {
+      const product = await prismaClient.product.findMany({
+        where:{
+          name:{
+            search:req.query.q?.toString()
+          },
+          description:{
+            search:req.query.q?.toString()
+          },
+          tags:{
+            search:req.query.q?.toString()
+          }
+        }
+      })
+      res.json(product);
+     } catch (error) {
+      console.log(error)
+     }
+     
   };
 }
