@@ -11,4 +11,5 @@ routes.put('/:id',[authMiddleware,adminMiddleware],errorHandler(Product.updatePr
 routes.delete('/:id',[authMiddleware,adminMiddleware],errorHandler(Product.deleteProduct))
 routes.get('/',[authMiddleware,adminMiddleware],errorHandler(Product.ListProducts))
 routes.get('/:id',[authMiddleware,adminMiddleware],errorHandler(Product.getProductsById))
+routes.get('/',authMiddleware,errorHandler(Product.searchProducts))
 export default routes;

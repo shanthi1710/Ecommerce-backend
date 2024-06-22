@@ -26,5 +26,6 @@ export enum ErrorCode{
     UnauthorizedException_ERROR =4001,
     PRODUCT_NOT_FOUND = 5001,
     ADDRESS_NOT_FOUND =6001,
-    ORDER_NOT_FOUND = 7001
+    ORDER_NOT_FOUND = 7001,
+    SEARCH_NOT_FOUND = 8001
 }
